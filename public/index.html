@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NEON VRM Studio</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand"><i></i><b>NEON</b><span>VRM MOTION STUDIO</span></div>
+      <div class="local"><i></i>LOCAL ONLY</div>
+    </header>
+
+    <section class="stage" id="stage">
+      <canvas id="vrmCanvas" aria-label="VRMプレビュー"></canvas>
+      <div class="empty-state" id="emptyState">
+        <div class="avatar-mark"><span>VRM</span></div>
+        <h1>モデルをここへドロップ</h1>
+        <p>VRM 0.x / 1.0 に対応。ファイルは外部へ送信されません。</p>
+        <button id="chooseModel" type="button">VRMファイルを選択</button>
+        <input id="modelFile" type="file" accept=".vrm,model/gltf-binary" hidden>
+      </div>
+      <div class="drop-cover" id="dropCover"><b>DROP VRM</b><span>離すとローカルで読み込みます</span></div>
+      <div class="stage-status"><i id="stageDot"></i><span id="stageLabel">NO MODEL</span></div>
+      <div class="model-name" id="modelName">VRM FILE REQUIRED</div>
+    </section>
+
+    <aside>
+      <div class="panel-heading"><span>MODEL</span><small>LOCAL FILE</small></div>
+      <button class="file-button" id="changeModel" type="button"><span>＋</span><b>VRMを読み込む</b></button>
+      <div class="model-card">
+        <i id="modelDot"></i>
+        <div><small>ACTIVE MODEL</small><b id="activeModel">未選択</b></div>
+      </div>
+      <div class="camera-presets"><button type="button" data-camera-preset="full">全身</button><button type="button" data-camera-preset="bust">上半身</button><button type="button" data-camera-preset="face">顔</button></div>
+      <div class="lighting-presets"><button type="button" data-lighting-preset="soft">ソフト</button><button type="button" data-lighting-preset="bright">明るい</button><button type="button" data-lighting-preset="stage">ステージ</button></div>
+      <div class="motion-slots">
+        <button type="button" data-motion-slot="idle"><span>IDLE</span><b id="idleMotionName">VRMAを選択</b></button>
+        <button type="button" data-motion-slot="talk"><span>TALK A</span><b id="talkMotionName">VRMAを選択</b></button>
+        <button type="button" data-motion-slot="talkAlt"><span>TALK B</span><b id="talkAltMotionName">任意</b></button>
+        <button type="button" data-motion-slot="emphasis"><span>EMPHASIS</span><b id="emphasisMotionName">任意</b></button>
+        <button type="button" data-motion-slot="listen"><span>LISTEN</span><b id="listenMotionName">任意</b></button>
+        <button type="button" data-motion-slot="nod"><span>NOD</span><b id="nodMotionName">任意</b></button>
+        <button type="button" data-motion-slot="greeting"><span>GREETING</span><b id="greetingMotionName">任意</b></button>
+        <input id="motionFile" type="file" accept=".vrma,model/gltf-binary" hidden>
+      </div>
+      <p class="slot-hint">VRMAスロットを右クリックすると解除できます</p>
+      <div class="motion-preview">
+        <span>ACTION PREVIEW</span>
+        <div>
+          <button type="button" data-play-motion="listen">LISTEN</button>
+          <button type="button" data-play-motion="nod">NOD</button>
+          <button type="button" data-play-motion="greeting">GREETING</button>
+          <button type="button" id="lipTest">LIP TEST</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-heading"><span>VOICE LINK</span><small>WEB AUDIO</small></div>
+      <label class="field"><span>入力デバイス</span><select id="inputDevice"><option value="">マイク許可後に表示</option></select></label>
+      <div class="level-row"><span>INPUT</span><div><i id="levelBar"></i></div><b id="levelText">-∞</b></div>
+      <button class="primary" id="audioButton" type="button"><span>◉</span><b>音声リンク開始</b></button>
+
+      <div class="divider"></div>
+      <div class="panel-heading"><span>MOTION</span><small>VRM EXPRESSIONS</small></div>
+      <label class="field"><span>背景モード</span><select id="backgroundMode"><option value="blue">GTPLive ブルー</option><option value="transparent">透明（OBS）</option><option value="green">クロマキー緑</option></select></label>
+      <label class="field"><span>描画品質</span><select id="renderQuality"><option value="auto">自動</option><option value="low">軽量（1.0x）</option><option value="standard">標準（1.5x）</option><option value="high">高画質（2.0x）</option></select></label>
+      <label class="field"><span>通常の自動表情</span><select id="idleExpressionPreset"><option value="happy">Happy</option><option value="relaxed">Relaxed</option><option value="off">OFF</option></select></label>
+      <label class="field"><span>強調時の自動表情</span><select id="emphasisExpressionPreset"><option value="surprised">Surprised</option><option value="happy">Happy</option><option value="off">OFF</option></select></label>
+      <label class="range"><span><b>口の感度</b><output id="sensitivityValue">1.30</output></span><input id="sensitivity" type="range" min=".5" max="2.5" value="1.3" step=".05"></label>
+      <label class="range"><span><b>口の遅延</b><output id="lipDelayValue">0 ms</output></span><input id="lipDelay" type="range" min="0" max="300" value="0" step="10"></label>
+      <label class="range"><span><b>動作の大きさ</b><output id="motionValue">1.00</output></span><input id="motion" type="range" min="0" max="2" value="1" step=".05"></label>
+      <label class="range"><span><b>自然な動き</b><output id="naturalnessValue">1.00</output></span><input id="naturalness" type="range" min="0" max="2" value="1" step=".05"></label>
+      <label class="range"><span><b>表情の強さ</b><output id="expressionValue">1.00</output></span><input id="expressionAmount" type="range" min="0" max="2" value="1" step=".05"></label>
+      <label class="range"><span><b>視線の動き</b><output id="gazeMotionValue">1.00</output></span><input id="gazeMotion" type="range" min="0" max="2" value="1" step=".05"></label>
+      <label class="range"><span><b>うなずき</b><output id="nodAmountValue">1.00</output></span><input id="nodAmount" type="range" min="0" max="2" value="1" step=".05"></label>
+      <label class="range"><span><b>VRMA再生速度</b><output id="playbackSpeedValue">1.00</output></span><input id="playbackSpeed" type="range" min=".6" max="1.4" value="1" step=".05"></label>
+      <label class="range"><span><b>切替の柔らかさ</b><output id="fadeScaleValue">1.00</output></span><input id="fadeScale" type="range" min=".5" max="2" value="1" step=".05"></label>
+      <div class="tuning-presets"><span>HUMANIZE PRESET</span><div><button type="button" data-tuning-preset="subtle">控えめ</button><button type="button" data-tuning-preset="balanced">標準</button><button type="button" data-tuning-preset="lively">活発</button></div></div>
+      <div class="settings-transfer"><button id="exportSettings" type="button">設定を書き出す</button><button id="importSettings" type="button">設定を読み込む</button><input id="settingsFile" type="file" accept=".json,application/json" hidden></div>
+      <div class="settings-transfer"><button id="exportPack" type="button">環境パックを書出</button><button id="importPack" type="button">環境パックを読込</button><input id="packFile" type="file" accept=".neonpack,application/octet-stream" hidden></div>
+      <button class="broadcast-button" id="broadcastMode" type="button">配信表示を開始</button>
+
+      <div class="feature-grid">
+        <div><i id="vrmFeature"></i><span>MOTION</span><b id="vrmState">FULL BODY</b></div>
+        <div><i id="voiceFeature"></i><span>VOICE</span><b id="voiceState">OFF</b></div>
+        <div><i class="on"></i><span>GAZE</span><b>CAMERA LOCK</b></div>
+        <div><i class="on"></i><span>FEET</span><b>GROUND LOCK</b></div>
+        <div><i class="on"></i><span>PRIVACY</span><b>LOCAL</b></div>
+        <div><i class="on"></i><span>UPLOAD</span><b>OFF</b></div>
+      </div>
+      <p class="privacy">VRM・VRMA・入力音声はブラウザー内だけで処理され、サーバーや外部APIへ送信されません。</p>
+    </aside>
+
+    <footer><span>VRM 0.x / 1.0 <b></b> WEBGL <b></b> WEB AUDIO DSP <b></b> LOCAL RUNTIME</span><span id="performance">FPS -- / FRAME -- / CPU -- / TRI -- / Q -- / LIP 0 ms</span><span id="clock"></span></footer>
+  </main>
+  <div id="toast"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

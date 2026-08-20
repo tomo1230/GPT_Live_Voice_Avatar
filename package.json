@@ -1,0 +1,23 @@
+{
+  "name": "local-virtual-human",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/vrm-app.js --bundle --format=esm --platform=browser --target=es2022 --outfile=public/app.js",
+    "generate:motions": "node tools/generate-simple-vrma.mjs",
+    "start": "npm run build && node server.mjs",
+    "check": "npm run build && node --check server.mjs && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@pixiv/three-vrm": "^3.5.5",
+    "@pixiv/three-vrm-animation": "^3.5.5",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
+  }
+}

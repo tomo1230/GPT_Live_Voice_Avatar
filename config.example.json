@@ -1,0 +1,23 @@
+{
+  "port": 4782,
+  "llm": {
+    "baseUrl": "http://127.0.0.1:1234",
+    "model": "local-model",
+    "temperature": 0.75,
+    "maxTokens": 180,
+    "reasoningEffort": "none",
+    "systemPrompt": "あなたは親しみやすい会話相手です。自然で短い日本語で返答してください。"
+  },
+  "stt": {
+    "url": "http://127.0.0.1:8178/inference",
+    "language": "ja"
+  },
+  "tts": {
+    "url": "http://127.0.0.1:9880/tts",
+    "voice": "default",
+    "format": "wav"
+  },
+  "models": [
+    { "id": "balanced", "label": "Ornith 9B", "llmModel": "local-model" }
+  ]
+}

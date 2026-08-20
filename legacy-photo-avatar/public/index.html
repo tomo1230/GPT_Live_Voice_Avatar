@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b15">
+  <title>NEON / Local Virtual Human</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <main>
+    <header>
+      <div class="brand"><i></i><span>NEON</span><small>LOCAL ENTITY / 01</small></div>
+      <div class="privacy"><span></span>LOCAL ONLY</div>
+    </header>
+
+    <section class="stage">
+      <div class="status-pill"><b id="stateDot"></b><span id="stateLabel">起動中</span></div>
+      <canvas id="avatar" aria-label="バーチャルヒューマン"></canvas>
+      <div class="aura"></div>
+      <div class="caption" id="caption">声を聞かせて。</div>
+      <div class="meter" id="meter"></div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-title"><span>VOICE LINK</span><small>VIRTUAL CABLE INPUT</small></div>
+      <label>
+        <span>入力デバイス</span>
+        <select id="inputDevice"><option>マイク許可後に表示</option></select>
+      </label>
+      <div class="level-row"><span>INPUT</span><div class="level-track"><i id="inputLevel"></i></div><b id="dbLabel">-∞</b></div>
+      <div class="controls">
+        <button id="linkButton" class="primary"><span class="mic-icon"></span><b>音声リンク開始</b></button>
+        <button id="muteButton" class="icon-button" disabled title="ミュート">◇</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-title"><span>MOTION ENGINE</span><small>AUDIO REACTIVE</small></div>
+      <label class="range-control">
+        <span><b>口の感度</b><output id="sensitivityValue">1.35</output></span>
+        <input id="sensitivity" type="range" min="0.5" max="2.5" value="1.35" step="0.05">
+      </label>
+      <label class="range-control">
+        <span><b>動作の大きさ</b><output id="motionValue">1.00</output></span>
+        <input id="motionAmount" type="range" min="0" max="2" value="1" step="0.05">
+      </label>
+      <div class="face-preview">
+        <span>FACE MATERIAL PREVIEW</span>
+        <div>
+          <button type="button" data-face-preview="a">あ</button>
+          <button type="button" data-face-preview="i">い</button>
+          <button type="button" data-face-preview="u">う</button>
+          <button type="button" data-face-preview="e">え</button>
+          <button type="button" data-face-preview="o">お</button>
+          <button type="button" data-face-preview="blink">瞬き</button>
+        </div>
+      </div>
+      <div class="feature-grid">
+        <div><i id="voiceGate"></i><span>VOICE</span><b id="voiceState">WAIT</b></div>
+        <div><i></i><span>AVATAR</span><b>PHOTO</b></div>
+        <div><i></i><span>PRIVACY</span><b>LOCAL</b></div>
+        <div><i></i><span>UPLOAD</span><b>OFF</b></div>
+      </div>
+      <p class="privacy-note">入力音声はブラウザ内で解析され、録音・文字起こし・サーバー送信されません。</p>
+    </aside>
+
+    <footer>
+      <span>VBCABLE INPUT <b></b> WEB AUDIO DSP <b></b> REALTIME LIPSYNC <b></b> MOTION SYNTHESIS</span>
+      <span id="clock"></span>
+    </footer>
+  </main>
+  <div id="toast"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
