@@ -3,7 +3,7 @@
 完全ローカルで動作する、音声駆動VRMバーチャルヒューマン基盤です。
 VRMファイルと入力音声はブラウザー内だけで処理され、外部APIやサーバーへアップロードされません。
 
-<img width="1902" height="943" alt="Image" src="https://github.com/user-attachments/assets/a0ded0e6-f8fc-48ca-8d57-4cb461dd692d" />
+<img width="1257" height="872" alt="Image" src="https://github.com/user-attachments/assets/5a9f912e-b3e7-4300-8634-be897df77ecd" />
 
 ## 現在できること
 
