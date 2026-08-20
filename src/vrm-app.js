@@ -174,6 +174,10 @@ let autoQualityLowWindows = 0;
 let autoQualityHighWindows = 0;
 let modelCenter = new THREE.Vector3(0, 1, 0);
 let modelHeight = 1.6;
+// VRM 0.x rigs are mirrored against VRM 1.0 rigs on the X and Z bone axes,
+// so hand-authored pitch/roll constants below have to be flipped per spec
+// version. Y (yaw) matches on both. Set from the model's meta on load.
+let poseAxisSign = 1;
 let modelFloorY = 0;
 let cameraTransition = null;
 const footGroundState = {
@@ -874,6 +878,7 @@ async function loadVRM(file, persist = true) {
     VRMUtils.combineSkeletons(gltf.scene);
     VRMUtils.rotateVRM0(next);
     vrm = next;
+    poseAxisSign = vrm.meta?.metaVersion === "0" ? 1 : -1;
     if (persist) await saveLocalFile("model", file, data);
     modelFilename = file.name;
     scene.add(vrm.scene);
@@ -1704,9 +1709,9 @@ function updateGaze(delta) {
   const neck = vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Neck);
   const headDelta = new THREE.Quaternion().setFromEuler(
     new THREE.Euler(
-      -headGazeY * .032 + prosodyNod * .018 * nodAmount,
+      (-headGazeY * .032 + prosodyNod * .018 * nodAmount) * poseAxisSign,
       headGazeX * .062,
-      -headGazeX * .006 + prosodyNod * .003 * gestureSide * nodAmount
+      (-headGazeX * .006 + prosodyNod * .003 * gestureSide * nodAmount) * poseAxisSign
     )
   );
   const neckDelta = new THREE.Quaternion().setFromEuler(
@@ -1800,11 +1805,11 @@ function applyWeightShift(elapsed, delta) {
   const shoulderLag = shoulderWeightFollow * .004 * amount;
 
   // Keep Y untouched so the sole-height correction remains authoritative.
-  appliedHipWeightOffset = bodyWeightShift * modelHeight * .0025 * amount;
+  appliedHipWeightOffset = bodyWeightShift * modelHeight * .0025 * amount * poseAxisSign;
   hips.position.x += appliedHipWeightOffset;
   const addRotation = (node, z) => {
     if (!node) return;
-    const rotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, z));
+    const rotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, z * poseAxisSign));
     node.quaternion.multiply(rotation);
     appliedWeightRotations.set(node, rotation);
   };
@@ -1853,7 +1858,7 @@ function applyBreathing(elapsed, delta) {
   const amount = motionAmount * naturalness * speechReduction * (activeAction ? .52 : .34);
   const addRotation = (node, x, z = 0) => {
     if (!node) return;
-    const rotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(x, 0, z));
+    const rotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(x * poseAxisSign, 0, z * poseAxisSign));
     node.quaternion.multiply(rotation);
     appliedBreathRotations.set(node, rotation);
   };
@@ -1922,13 +1927,15 @@ function animateBones(elapsed) {
     const node = vrm.humanoid?.getNormalizedBoneNode(name);
     const rest = restBones.get(name);
     if (!node || !rest) continue;
-    node.quaternion.copy(rest).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z)));
+    node.quaternion.copy(rest).multiply(
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(x * poseAxisSign, y, z * poseAxisSign))
+    );
   }
   const hips = vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Hips);
   const hipsRest = restPositions.get(VRMHumanBoneName.Hips);
   if (hips && hipsRest) {
     hips.position.copy(hipsRest);
-    hips.position.x += weight * .012 * amount;
+    hips.position.x += weight * .012 * amount * poseAxisSign;
     hips.position.y += (breath * .0025 - Math.abs(weight) * .0015) * amount;
   }
 }

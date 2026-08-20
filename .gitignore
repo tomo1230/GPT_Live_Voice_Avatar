@@ -39,3 +39,6 @@ ChatGPT Image.png
 *.log
 .DS_Store
 Thumbs.db
+
+# Editor / harness
+.claude/
